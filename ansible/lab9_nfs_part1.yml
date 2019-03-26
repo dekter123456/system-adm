@@ -1,0 +1,90 @@
+---
+- hosts: server-04
+  become: yes
+  become_user: root
+  tasks:
+  
+
+  - name: install nfs
+    yum:
+      name: "nfs-utils"
+
+  #- name: vi file
+   # lineinfile:
+    #  path: /etc/exports
+     # regexp: '/var/nfs'
+      #line: '/var/nfs    *(rw,sync,no_root_squash,no_all_squash)'
+  - name: create dir nfs
+    file:
+      path: /var/nfs
+      state: directory
+      mode: "0755"
+  - name: change permission
+    file:
+      path: /var/nfs
+      owner: nfsnobody
+      group: nfsnobody
+      mode: "0755"
+  - name: enable services
+    service:
+      name: "rpcbind"
+      enabled: yes
+  - name: enable services
+    service:
+      name: "nfs-server"
+      enabled: yes
+  - name: enable services
+    service:
+      name: "nfs-lock"
+      enabled: yes
+
+  - name: Start services
+    service: 
+      name: "rpcbind"
+      state: started
+  - name: Start services
+    service: 
+      name: "nfs-server"
+      state: started
+  - name: Start services
+    service: 
+      name: "nfs-lock"
+      state: started
+
+  - name: firewall add services
+    firewalld:
+      zone: public
+      service: "nfs"
+      permanent: yes
+      state: enabled
+  - name: firewall add services
+    firewalld:
+      zone: public
+      service: "mountd"
+      permanent: yes
+      state: enabled
+
+  - name: firewall add services
+    firewalld:
+      zone: public
+      service: "rpc-bind"
+      permanent: yes
+      state: enabled
+
+  - name: restart firewalld
+    service: 
+      name: firewalld
+      state: restarted
+
+- hosts: web
+  become: yes
+  become_user: root
+  tasks:
+  - name: install nfs
+    yum:
+      name: "nfs-utils"
+  - name: create dir nfs/www
+    file:
+      path: /var/nfs/www
+      state: directory
+      mode: "0755"

@@ -1,0 +1,12 @@
+<VirtualHost *:80>
+    ServerName mynet-116.com
+    ServerAlias www.mynet-116.com
+    DocumentRoot /var/nfs/www/mynet-116.com/html
+    <Directory /var/nfs/www/mynet-116.com/html>
+        Options -Indexes +FollowSymLinks +MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
+    ErrorLog /var/nfs/www/mynet-116.com/log/error.log
+    CustomLog /var/nfs/www/mynet-116.com/log/requests.log combined
+</VirtualHost>

@@ -1,0 +1,134 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  tasks:
+  - name: install bind
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - bind
+      - bind-utils
+    
+  - name: edit3
+    lineinfile:
+      path: /etc/resolv.conf
+      regexp: 'nameserver 10.0.2.3'
+      line: 'nameserver 127.0.0.1'
+    when: ansible_connection == 'local'
+  - name: edit3
+    lineinfile:
+      path: /etc/resolv.conf
+      regexp: 'options single-request-reopen'
+      line: ''
+    when: ansible_connection == 'local'
+  - name: edit1
+    lineinfile:
+      path: /etc/resolv.conf
+      regexp: 'search informatics.buu.ac.th'
+      line: ''
+    when: ansible_connection == 'local'
+  #- name: edit1
+   # lineinfile:
+    #  path: /etc/named.conf
+     # regexp: 'listen-on port 53'
+      #line: '        listen-on port 53 { 127.0.0.1; 192.168.100.11;};'
+      #backup: yes
+    #when: ansible_connection == 'local'
+  #- name: edit allow query
+   # lineinfile:
+    #  path: /etc/named.conf
+     # regexp: 'allow-query'
+      #line: '        allow-query     { any; };'
+      #backup: yes
+    #when: ansible_connection == 'local'
+  #- name: add zone
+   # lineinfile:
+    #  path: /etc/named.conf
+     # insertafter: 'include "/etc/named.rfc1912.zones";'
+      #line: 'include "/etc/named/named.conf.local";'
+      #backup: yes
+    #when: ansible_connection == 'local'
+  - name: change permission
+    file:
+      path: /etc/named
+      owner: root
+      group: root
+      mode: "0755"
+    when: ansible_connection == 'local'
+  - name: create dir zonefile
+    file:
+      path: /etc/named/zones
+      state: directory
+      mode: "0755"
+    when: ansible_connection == 'local'
+  - name: copy forward
+    template:
+      src: '{{ item.source }}'
+      dest: '{{ item.destination }}'
+      owner: root
+      group: root
+      mode: "0755"
+    loop:
+    - { source: 'template/db.my-site.com.j2', destination: '/etc/named/zones/db.my-site.com' }
+    - { source: 'template/db.mynet-116.com.j2', destination: '/etc/named/zones/db.mynet-116.com' }
+    - { source: 'template/db.192.168.100.j2', destination: '/etc/named/zones/db.192.168.100' }
+    - { source: 'template/named.conf.local.j2', destination: '/etc/named/named.conf.local' }
+    when: ansible_connection == 'local'
+  - name: Start firewalld
+    service:
+      name: firewalld 
+      state: started
+    when: ansible_connection == 'local'
+  - name:
+    firewalld:
+      port: 53/udp
+      permanent: yes
+      state: enabled
+    when: ansible_connection == 'local'
+  - name:
+    firewalld:
+      port: 53/tcp
+      permanent: yes
+      state: enabled
+    when: ansible_connection == 'local'
+  - name: reStart firewalld
+    service:
+      name: firewalld 
+      state: restarted
+    when: ansible_connection == 'local'
+  - name: Start named
+    service: 
+      name: named 
+      state: started
+    when: ansible_connection == 'local'
+  - name: install bind
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - bind
+      - bind-utils
+    when: ansible_connection != 'local'
+  - name: edit1
+    lineinfile:
+      path: /etc/resolv.conf
+      regexp: 'search informatics.buu.ac.th'
+      line: ''
+    when: ansible_connection != 'local'
+  - name: edit2
+    lineinfile:
+      path: /etc/resolv.conf
+      regexp: 'nameserver 10.0.2.3'
+      line: 'nameserver 192.168.100.11'
+    when: ansible_connection != 'local'
+  - name: edit3
+    lineinfile:
+      path: /etc/resolv.conf
+      regexp: 'options single-request-reopen'
+      line: ''
+    when: ansible_connection != 'local'
+  
+  
+  

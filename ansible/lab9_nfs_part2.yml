@@ -1,0 +1,25 @@
+---
+- hosts: web
+  become: yes
+  become_user: root
+  tasks:
+  
+
+  - name: install nfs
+    yum:
+      name: "nfs-utils"
+
+  - name: copy forward
+    template:
+      src: '{{ item.source }}'
+      dest: '{{ item.destination }}'
+      owner: root
+      group: root
+      mode: "0755"
+    loop:
+    - { source: 'template/mynet-116.com.conf.j2', destination: '/etc/httpd/conf.d/mynet-116.com.conf' }
+    - { source: 'template/my-site.com.conf.j2', destination: '/etc/httpd/conf.d/my-site.com.conf' }
+  - name: restart httpd
+    service: 
+      name: httpd
+      state: restarted

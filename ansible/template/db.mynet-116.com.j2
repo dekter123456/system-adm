@@ -1,0 +1,24 @@
+$TTL    604800
+@       IN      SOA     ns1.mynet-116.com. root.mynet-116.com. (
+                  3       ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800 )   ; Negative Cache TTL
+;
+; name servers - NS records
+     IN      NS      ns1.mynet-116.com.
+
+; name servers - A records
+ns1          IN      A       192.168.100.11
+
+; 10.128.0.0/16 - A records
+ansible-mgn	IN	A	192.168.100.11
+server-01	IN	A	192.168.100.80
+server-02	IN	A	192.168.100.81
+server-03	IN	A	192.168.100.82
+server-04	IN	A	192.168.100.70
+web-01		IN	CNAME	server-02
+web-02		IN	CNAME	server-03
+www            IN   CNAME     server-01
+

@@ -1,0 +1,83 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  tasks:
+  - name: install rsyslog
+    yum:
+      name: "rsyslog"
+  - name: Start services
+    service: 
+      name: "rsyslog"
+      state: started
+  - name: Start services
+    service: 
+      name: "rsyslog"
+      enabled: "true"
+- hosts: ansible-mgn
+  become: yes
+  become_user: root
+  tasks:
+  #- name: rsyslog open 514 udp
+   # lineinfile:
+    #  path: /etc/rsyslog.conf
+     # regexp: '$ModLoad imudp'
+      #line: '$ModLoad imudp'
+  #- name: rsyslog open 514 udp
+   # lineinfile:
+    #  path: /etc/rsyslog.conf
+     # regexp: '$UDPServerRun 514'
+      #line: '$UDPServerRun 514'
+  #- name: rsyslog open 514 udp
+   # lineinfile:
+    #  path: /etc/rsyslog.conf
+     # regexp: '$ModLoad imtcp'
+      #line: '$ModLoad imtcp'
+  #- name: rsyslog open 514 udp
+   # lineinfile:
+    #  path: /etc/rsyslog.conf
+     # regexp: '$InputTCPServerRun 514'
+      #line: '$InputTCPServerRun 514'
+  
+  #- name: create path log
+    #lineinfile:
+     # path: /etc/rsyslog.conf
+      #line: '$template RemoteLogs,"/var/rsyslog/%HOSTNAME%/%PROGRAMNAME%.log"
+#*.* ?RemoteLogs
+#& ~'
+  
+- hosts: all
+  become: yes
+  become_user: root
+  tasks:
+  #- name: set default log path
+    #lineinfile:
+    #  path: /etc/rsyslog.conf
+    #  regexp: '#*.* @@remote-host:514'
+    #  line: '*.* @192.168.100.11:514'
+    
+  - name: reStart services
+    service: 
+      name: "rsyslog"
+      state: restarted
+- hosts: ansible-mgn
+  become: yes
+  become_user: root
+  tasks:
+
+  - name: open port
+    firewalld:
+      port: 514/tcp
+      permanent: yes
+      state: enabled
+    
+  - name: open port 
+    firewalld:
+      port: 514/udp
+      permanent: yes
+      state: enabled
+
+  - name: reStart services
+    service: 
+      name: "firewalld"
+      state: restarted

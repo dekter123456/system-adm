@@ -48,27 +48,27 @@
     #  line: 'date.timezone = Asia/Bangkok'
   - name: create dir log 
     file:
-      path: /var/www/mynet-116.com/log
+      path: /var/nfs/www/mynet-116.com/log
       state: directory
       mode: "0755"
   - name: create dir 
     file:
-      path: /var/www/mynet-116.com/html
+      path: /var/nfs/www/mynet-116.com/html
       state: directory
       mode: "0755"
   - name: create dir 
     file:
-      path: /var/www/my-site.com/html
+      path: /var/nfs/www/my-site.com/html
       state: directory
       mode: "0755"
   - name: create dir 
     file:
-      path: /var/www/my-site.com/log
+      path: /var/nfs/www/my-site.com/log
       state: directory
       mode: "0755"
   - name: change permission
     file:
-      path: /var/www
+      path: /var/nfs/www
       owner: root
       group: root
       mode: "0755"

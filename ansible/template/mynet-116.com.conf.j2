@@ -8,5 +8,5 @@
         Require all granted
     </Directory>
     ErrorLog /var/nfs/www/mynet-116.com/log/error.log
-    CustomLog /var/nfs/www/mynet-116.com/log/requests.log combined
+    CustomLog "| /bin/sh -c '/usr/bin/tee -a /var/log/httpd/httpd-access.log | /usr/bin/logger -thttpd -plocal1.notice'" combined
 </VirtualHost>
